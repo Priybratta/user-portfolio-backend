@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: user-portfolio-backend
+
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/portfolio_db
+#    username: root
+#    password: root
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECREt}
+            scope:
+              - email
+              - profile
