@@ -26,12 +26,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String token = resolveToken(request);
+        try {
+            String token = resolveToken(request);
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (token != null && jwtTokenProvider.validateToken(token)) {
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (Exception e) {
+            SecurityContextHolder.clearContext();
         }
+
+        filterChain.doFilter(request, response);
     }
 
     private String resolveToken(HttpServletRequest request) {
