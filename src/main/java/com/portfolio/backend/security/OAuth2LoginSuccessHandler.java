@@ -1,5 +1,7 @@
 package com.portfolio.backend.security;
 
+import com.portfolio.backend.entity.User;
+import com.portfolio.backend.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import java.io.IOException;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
     
     @Value("${app.frontend.url}")
     private String frontendUrl;
@@ -34,10 +37,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
 
         String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
+        String photo = oAuth2User.getAttribute("photo");
+
         if (email == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Email not found in OAuth2 response");
             return;
         }
+
+        User user = userService.findOrCreateUser(email, name, photo);
 
         String jwt = jwtTokenProvider.generateToken(email);
         response.sendRedirect(frontendUrl + "/oauth2/success?token=" + jwt);
